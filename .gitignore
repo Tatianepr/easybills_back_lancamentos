@@ -1,0 +1,10 @@
+# Default ignored files
+
+/.idea/
+/database/
+/__pycache__/
+/env/
+/log/
+/schemas/__pycache__/
+/model/__pycache__/
+teste.py
