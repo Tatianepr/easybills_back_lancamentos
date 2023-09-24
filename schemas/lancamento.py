@@ -14,7 +14,7 @@ def NomeCategoria(id_categoria: int):
     categoria_id = id_categoria
 
     try:
-        request = requests.get(f"http://127.0.0.1:5000/categoriaID?id={categoria_id}")
+        request = requests.get(f"http://192.168.15.5:5000/categoriaID?id={categoria_id}")
         logger.debug(f"Retorno do json #{request.status_code}")
 
     except requests.exceptions.ConnectionError:
@@ -35,7 +35,7 @@ def TipoCategoria(id_categoria: int):
     categoria_id = id_categoria
 
     try:
-        request = requests.get(f"http://127.0.0.1:5000/categoriaID?id={categoria_id}")
+        request = requests.get(f"http://192.168.15.5:5000/categoriaID?id={categoria_id}")
         logger.debug(f"Retorno do json #{request.status_code}")
 
     except requests.exceptions.ConnectionError:
@@ -62,6 +62,7 @@ class LancamentoSchema(BaseModel):
     tipo: str = "Despesa"
     data_vencimento: date = datetime.now().date()
     categoria_id: int = 1
+    login: str = "login"
 
 class LancamentoDelPagaSchema(BaseModel):
     """ Define como deve ser a estrutura que representa a deleção. Que será
@@ -74,14 +75,16 @@ class LancamentoBuscaSchema(BaseModel):
         feita apenas com base no nome da despesa.
     """
     descricao: str = "Inglês"
+    login: str = "login"
 
 class MensalBuscaSchema(BaseModel):
     """ Define como deve ser a estrutura que representa a busca mensal.
     """
     data_vencimento: date = datetime.now().date()
+    login: str = "login"
 
 class LancamentoBuscaEdicaoSchema(BaseModel):
-    """ Define como deve ser a estrutura que representa a busca para edição da despesa. 
+    """ Define como deve ser a estrutura que representa a busca para edição da lançamentos. 
     """
     id: int = 1
     descricao: str = "Inglês"
@@ -92,17 +95,17 @@ class LancamentoBuscaEdicaoSchema(BaseModel):
     categoria_id: int = 1
 
 class LancamentoViewSchema(BaseModel):
-    """ Define como uma despesa será retornada: despesa + comentários.
+    """ Define como um lançamento será retornado: lançamentos + categoria.
     """
     id: int = 1
     descricao: str = "Inglês"
     valor: float = 700
     pago: bool = False
     tipo: str = "Despesa"
-    data_vencimento: date = datetime.now().date()
+    data_vencimento: date = datetime.now().strftime('%d/%m/%Y')
     categoria_id: int = 1
     categoria_nome: str = "Educação"
-
+    login: str = "login"
 
 
 class ListagemLancamentosSchema(BaseModel):
@@ -125,7 +128,8 @@ def apresenta_lancamentos(despesas):
             "tipo": Despesa.tipo,
             "data_vencimento": Despesa.data_vencimento.strftime('%d/%m/%Y'),
             "categoria_id": Despesa.categoria_id,
-            "categoria_nome": NomeCategoria(Despesa.categoria_id)
+            "categoria_nome": NomeCategoria(Despesa.categoria_id),
+            "login" : Despesa.login
         })
 
     return {"despesas": result}
@@ -136,6 +140,14 @@ class LancamentoRetornoSchema(BaseModel):
     """
     mesage: str = "mensagem"
     descricao: str = "Inglês"
+    id: int = 1
+    login: str = "login"
+
+class LancamentoRetornoCompletoSchema(BaseModel):
+    """ Define como um lançamento será retornado: lançamentos + categoria.
+    """
+    Lancamento :  LancamentoViewSchema
+    mensage: str = "Lançamento atualizado com sucesso"
 
 class ControleViewSchema(BaseModel):
     saldo_mes: float = 5000.00
@@ -158,5 +170,6 @@ def apresenta_lancamento(lancamento: Lancamento):
             "tipo": lancamento.tipo,
             "data_vencimento": lancamento.data_vencimento.strftime('%d/%m/%Y'),
             "categoria_id": lancamento.categoria_id,
-            "categoria_nome": NomeCategoria(lancamento.categoria_id)
+            "categoria_nome": NomeCategoria(lancamento.categoria_id),
+            "login" : lancamento.login
     }

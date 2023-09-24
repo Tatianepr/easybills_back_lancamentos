@@ -14,15 +14,16 @@ class Lancamento(Base):
     tipo = Column(String(20))
     categoria_id = Column(Integer, nullable=False)
     data_vencimento = Column(Date)
+    login = Column(String(10))
     data_insercao = Column(DateTime, default=datetime.now())
     
-    # Adicione a restrição de unicidade composta nas colunas descricao e data_vencimento
+    # Adicione a restrição de unicidade composta nas colunas descricao, data_vencimento e login
     __table_args__ = (
-        UniqueConstraint('descricao', 'data_vencimento', name='uq_descricao_data_vencimento'),
+        UniqueConstraint('descricao', 'data_vencimento', 'login', name='uq_descricao_data_vencimento_login'),
     )
 
     def __init__(self, descricao: str, valor: float, pago: Boolean, tipo: str, categoria_id: int, data_vencimento: Date,
-                 data_insercao: Union[DateTime, None] = None):
+                 login: str, data_insercao: Union[DateTime, None] = None):
         """
         Cria uma Despesa
 
@@ -41,6 +42,7 @@ class Lancamento(Base):
         self.tipo = tipo
         self.categoria_id = categoria_id
         self.data_vencimento = data_vencimento
+        self.login = login
 
         # se não for informada, será o data exata da inserção no banco
         if data_insercao:

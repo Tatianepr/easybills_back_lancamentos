@@ -18,7 +18,15 @@ Linkendin: https://www.linkedin.com/in/tatianepr/
 6) GET - /mensal
 7) PATCH - /paga
 8) GET - /saldo
----
+
+
+## Arquitetura do projeto
+
+Foi desenvolvido um frontend em REACT que chama os dois componentes conforme esquema abaixo, ambos escritos em Python.
+
+<img scr="arquitetura.jpg">
+
+
 ## Como executar 
 
 
@@ -33,7 +41,6 @@ PAra criar um ambiente virtual:
 python -m virtualenv env
 .\env\Scripts\activate
 
-.\venv\Scripts\activate
 ```
 
 Este comando instala as dependências/bibliotecas, descritas no arquivo `requirements.txt`.
@@ -54,7 +61,7 @@ automaticamente após uma mudança no código fonte.
 flask run --host 0.0.0.0 --port 5001 --reload
 ```
 
-Abra o [http://localhost:5000/#/](http://localhost:5000/#/) no navegador para verificar o status da API em execução.
+Abra o [http://localhost:5000/#/](http://localhost:5001/#/) no navegador para verificar o status da API em execução.
 
 
 ## Como executar através do Docker
@@ -74,39 +81,5 @@ Uma vez criada a imagem, para executar o container basta executar, **como admini
 $ docker run -p 5001:5001 lancamentos
 ```
 
-Uma vez executando, para acessar a API, basta abrir o [http://localhost:5000/#/](http://localhost:5000/#/) no navegador.
+Uma vez executando, para acessar a API, basta abrir o [http://localhost:5001/#/](http://localhost:5001/#/) no navegador.
 
-
-
-### Alguns comandos úteis do Docker
-
->**Para verificar se a imagem foi criada** você pode executar o seguinte comando:
->
->```
->$ docker images
->```
->
-> Caso queira **remover uma imagem**, basta executar o comando:
->```
->$ docker rmi <IMAGE ID>
->```
->Subistituindo o `IMAGE ID` pelo código da imagem
->
->**Para verificar se o container está em exceução** você pode executar o seguinte comando:
->
->```
->$ docker container ls --all
->```
->
-> Caso queira **parar um conatiner**, basta executar o comando:
->```
->$ docker stop <CONTAINER ID>
->```
->Subistituindo o `CONTAINER ID` pelo ID do conatiner
->
->
-> Caso queira **destruir um conatiner**, basta executar o comando:
->```
->$ docker rm <CONTAINER ID>
->```
->Para mais comandos, veja a [documentação do docker](https://docs.docker.com/engine/reference/run/).

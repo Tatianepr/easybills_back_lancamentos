@@ -61,9 +61,10 @@ def add_lancamento(form: LancamentoSchema):
             pago=form.pago,
             tipo=form.tipo,
             categoria_id=form.categoria_id,
-            data_vencimento=form.data_vencimento)
+            data_vencimento=form.data_vencimento,
+            login = form.login)
 
-        # adicionando o despesa a categoria.
+        # adicionando lançamento .
         session.add(lancamento)
         session.commit()
         logger.debug(f"Adicionando lançamento: '{lancamento.descricao}'")
@@ -72,16 +73,16 @@ def add_lancamento(form: LancamentoSchema):
 
     except IntegrityError as e:
         # como a duplicidade do nome é a provável razão do IntegrityError
-        error_msg = "Lançamento de mesmo nome e vencimento já salvo na base :/"
+        error_msg = "Lançamento de mesmo nome, vencimento e login já salvo na base :/"
         logger.warning(
-            f"Erro ao adicionar lançamento '{lancamento.descricao}', {error_msg}")
+            f"Erro ao adicionar lançamento '{lancamento.descricao}' para login {lancamento.login}, {error_msg}")
         return {"mesage": error_msg}, 409
 
     except Exception as e:
         # caso um erro fora do previsto
         error_msg = "Não foi possível salvar novo item :/"
         logger.warning(
-            f"Erro ao adicionar lançamento '{lancamento.descricao}', {error_msg}")
+            f"Erro ao adicionar lançamento '{lancamento.descricao}' para login {lancamento.login}, {error_msg}")
         return {"mesage": error_msg}, 400
 
 
@@ -140,34 +141,36 @@ def get_mensal(query: MensalBuscaSchema):
     """
 
     lancamento_mes = query.data_vencimento
-    logger.debug(f"Coletando dados sobre lançamento #{lancamento_mes}")
+    login = query.login
+    logger.debug(f"Coletando dados sobre lançamento #{lancamento_mes} para usuário {login}")
     # criando conexão com a base
     session = Session()
     
     lancamentos = session.query(Lancamento).filter(
         extract('month', Lancamento.data_vencimento) ==  extract('month', lancamento_mes),
-        cast(extract('year', Lancamento.data_vencimento), Integer) == cast(extract('year', lancamento_mes), Integer)).all()
+        cast(extract('year', Lancamento.data_vencimento), Integer) == cast(extract('year', lancamento_mes), Integer),
+        Lancamento.login == login).all()
 
     if not lancamentos:
         # se lançamento não foi encontrado
-        error_msg = "Lançamento não encontrada na base :/"
+        error_msg = f"Lançamentos não encontrados na base para o usuário {login}:"
         logger.warning(
-            f"Erro ao buscar lançamento '{lancamento_mes}', {error_msg}")
+            f"Erro ao buscar lançamento '{lancamento_mes}' para o usuário {login}, {error_msg}")
         return {"mesage": error_msg}, 404
     else:
-        logger.debug(f"Lançamentos encontrados: '{lancamento_mes}'")
+        logger.debug(f"Lançamentos encontrados: '{lancamento_mes}' para o usuário {login}")
         # retorna a representação da despesa
         return apresenta_lancamentos(lancamentos), 200
     
 @app.get('/saldo', tags=[lancamento_tag], responses={"200": ControleViewSchema, "409": ErrorSchema, "400": ErrorSchema})
-def get_saldo():
+def get_saldo(query: MensalBuscaSchema):
     """
     Consolida os lançamentos totalizando os valores mensais
 
     Mostra os totais lançados no mês corrente
 
     """
-    mes_corrente = datetime.now().date()
+    mes_corrente = query.data_vencimento
     logger.debug(f"Buscando lançamentos do mês '{mes_corrente}'")
 
     session = Session()
@@ -270,7 +273,7 @@ def paga_lancamento(query: LancamentoDelPagaSchema):
 
 
 @app.put('/lancamento', tags=[lancamento_tag],
-         responses={"200": LancamentoRetornoSchema, "404": ErrorSchema})
+         responses={"200": LancamentoRetornoCompletoSchema, "404": ErrorSchema})
 def edita_lancamento(query: LancamentoBuscaEdicaoSchema):
     """ 
     Atualiza um lançamnto a partir do nome informado. 
@@ -307,7 +310,7 @@ def edita_lancamento(query: LancamentoBuscaEdicaoSchema):
             session.commit()
             # retorna a representação da mensagem de confirmação
             logger.debug(f"Atualizando lançamento #{lancamento_id}")
-            return {"mesage": "Lançamento atualizada com sucesso", "lancamento": apresenta_lancamento(lancamento)}, 200
+            return {"mesage": "Lançamento atualizado com sucesso", "lancamento": apresenta_lancamento(lancamento)}, 200
         
         else:
             # se tipo da categoria não é o mesmo do lançamento
