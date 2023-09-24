@@ -24,9 +24,9 @@ Linkendin: https://www.linkedin.com/in/tatianepr/
 
 Foi desenvolvido um frontend em REACT que chama os dois componentes escritos em Python. 
 
-- Frontend REACT -> https://github.com/Tatianepr/easybills-front
-- Componente A -> https://github.com/Tatianepr/easybills_back_categoria
-- Componente B -> https://github.com/Tatianepr/easybills_back_lancamentos (esse)
+- Frontend REACT (porta 3000) -> https://github.com/Tatianepr/easybills-front
+- Componente Categoria (porta 5000) -> https://github.com/Tatianepr/easybills_back_categoria
+- Componente Lançametos (porta 5001) -> https://github.com/Tatianepr/easybills_back_lancamentos (esse)
 
 Além disso, o front-end chama uma API externa abaixo, responsável por fornecer cotações atualizadas do Dólar, Euro e Bicoin.
 
