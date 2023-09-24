@@ -22,10 +22,17 @@ Linkendin: https://www.linkedin.com/in/tatianepr/
 
 ## Arquitetura do projeto
 
-Foi desenvolvido um frontend em REACT que chama os dois componentes conforme esquema abaixo, ambos escritos em Python.
+Foi desenvolvido um frontend em REACT que chama os dois componentes escritos em Python. 
 
-<img scr="arquitetura.jpg">
+- Frontend REACT -> https://github.com/Tatianepr/easybills-front
+- Componente A -> https://github.com/Tatianepr/easybills_back_categoria
+- Componente B -> https://github.com/Tatianepr/easybills_back_lancamentos (esse)
 
+Além disso, o front-end chama uma API externa abaixo, responsável por fornecer cotações atualizadas do Dólar, Euro e Bicoin.
+
+- Documentação da API Externa -> https://github.com/raniellyferreira/economy-api
+
+<img src='arquitetura.jpg' />
 
 ## Como executar 
 
